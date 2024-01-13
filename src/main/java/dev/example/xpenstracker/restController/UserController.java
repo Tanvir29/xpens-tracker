@@ -41,7 +41,7 @@ public class UserController {
         return "redirect:/user";
     }
 
-    @GetMapping({"/{userId}/", "/{userId}"})
+    //@GetMapping({"/{userId}/", "/{userId}"})
     public UserInfo getUserById(@PathVariable("userId") Long userInfoId) {
         return userService.getUserById(userInfoId);
     }

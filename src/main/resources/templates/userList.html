@@ -34,7 +34,9 @@
             <th> Last Name </th>
             <th> Phone No </th>
             <th> Email Address </th>
-            <th> Actions </th>
+            <th> Update User </th>
+            <th> Categorywise Expense </th>
+            <th> Total Expenses</th>
         </tr>
         </thead>
         <tbody>
@@ -46,6 +48,12 @@
             <td th:text="${person.emailId}"></td>
             <td> <a th:href="@{/user/updateUser/{id}(id=${person.userId})}"
                     class="btn btn-primary btn-sm mb-2"> Update </a>
+            </td>
+            <td> <a th:href="@{/user/{id}/expenseByCategory(id=${person.userId})}"
+                    class="btn btn-primary btn-sm mb-2"> View </a>
+            </td>
+            <td> <a th:href="@{/user/{id}/(id=${person.userId})}"
+                    class="btn btn-primary btn-sm mb-2"> View </a>
             </td>
         </tr>
         </tbody>

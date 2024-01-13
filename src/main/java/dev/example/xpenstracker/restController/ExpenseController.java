@@ -23,66 +23,71 @@ interface ExpenseOperation {
 }
 
 @Controller
-@RequestMapping({"/expense/", "/expense"})
+//@RequestMapping({"/expense/", "/expense"})
 public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
     @Autowired
     private UserService userService;
 
-    @PostMapping("/saveExpense")
+    @PostMapping("/expense/saveExpense")
     public String saveExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.postExpense(expenseDto);
         return "redirect:/expense";
     }
 
-    @PostMapping("/updateExpense")
+    @PostMapping("/expense/updateExpense")
     public String updateExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.updateExpenseByExpenseId(expenseDto);
         return "redirect:/expense";
     }
 
-    @GetMapping
+    @GetMapping("/expense/")
     public String viewExpenseList(@NotNull Model model){
         List<ExpenseDto> expenseDtos = expenseService.getExpenseList();
         model.addAttribute("listExpenses", expenseDtos);
         return "expenseList";
     }
 
-    @GetMapping("/newExpenseForm")
+    @GetMapping("/expense/newExpenseForm")
     public String showNewExpenseForm(Model model){
         ExpenseDto expenseDto = new ExpenseDto();
         model.addAttribute("expense", expenseDto);
         return "newExpense";
     }
 
-    @GetMapping({"/{id}/", "/{id}"})
     public ExpenseDto getExpenseByExpenseId(@PathVariable("id") Long expenseId) {
         return expenseService.getExpenseByExpenseId(expenseId);
     }
 
     @GetMapping("/user/{id}/expenseByCategory")
-    public List<Object[]> getExpenseByUserIdAndAllCategory(@PathVariable("id") Long userId,
+    public String getExpenseByUserIdAndAllCategory(@PathVariable("id") Long userId,
                                                            @RequestParam(value = "startDate", required = false)
                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                            @RequestParam(value = "endDate", required = false)
-                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                            Model model) {
+
+        List<Object[]> expenseResults;
         if (startDate != null && endDate != null) {
-            return expenseService.getExpenseByUserIdAndCategoriesInTimePeriod
+            expenseResults = expenseService.getExpenseByUserIdAndCategoriesInTimePeriod
                     (userId, startDate, endDate);
         } else {
-            return expenseService.getExpenseByUserIdAndCategories(userId);
+            expenseResults = expenseService.getExpenseByUserIdAndCategories(userId);
         }
+        model.addAttribute("expenseResults", expenseResults);
+        return "userExpenseByCategory";
     }
 
     @GetMapping({"/user/{userId}", "/user/{userId}/"})
-    public ExpenseResponse getExpensesForUser(@PathVariable("userId") Long userId,
+    public String getExpensesForUser(@PathVariable("userId") Long userId,
                                               @RequestParam(value = "categoryName", required = false)
                                               CategoryName categoryName,
                                               @RequestParam(value = "startDate", required = false)
                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                               @RequestParam(value = "endDate", required = false)
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                Model model) {
 
         ExpenseOperation operationWithTimePeriod = response -> {
             response.setExpenseList
@@ -128,23 +133,18 @@ public class ExpenseController {
                 + (startDate != null && endDate != null ? "time" : "no_time");
 
         ExpenseResponse expenseResponse = operations.get(key).apply(new ExpenseResponse());
-        return expenseResponse;
+        model.addAttribute("expenseResponse", expenseResponse);
+        return "userExpenseList";
     }
 
-    @DeleteMapping({"/{id}/", "/{id}"})
-    public String deleteExpenseByExpenseId(@PathVariable("id") Long expenseId) {
-        expenseService.deleteExpenseByExpenseId(expenseId);
-        return "Expense deleted";
-    }
-
-    @GetMapping("/updateExpense/{id}")
+    @GetMapping("/expense/updateExpense/{id}")
     public String updateExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
         ExpenseDto expenseDto = getExpenseByExpenseId(expenseId);
         model.addAttribute("expense", expenseDto);
         return "updateExpense";
     }
 
-    @GetMapping("/deleteExpense/{id}")
+    @GetMapping("/expense/deleteExpense/{id}")
     public String deleteExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
         expenseService.deleteExpenseByExpenseId(expenseId);
         return "redirect:/expense";
