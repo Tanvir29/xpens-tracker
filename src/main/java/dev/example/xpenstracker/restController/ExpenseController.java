@@ -5,9 +5,11 @@ import dev.example.xpenstracker.model.enumeration.CategoryName;
 import dev.example.xpenstracker.service.ExpenseService;
 import dev.example.xpenstracker.service.UserService;
 import dev.example.xpenstracker.util.ExpenseResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,7 +22,7 @@ interface ExpenseOperation {
     ExpenseResponse apply(ExpenseResponse response);
 }
 
-@RestController
+@Controller
 @RequestMapping({"/expense/", "/expense"})
 public class ExpenseController {
     @Autowired
@@ -28,15 +30,30 @@ public class ExpenseController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<String> postExpense(@RequestBody ExpenseDto expenseDto) {
+    @PostMapping("/saveExpense")
+    public String saveExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.postExpense(expenseDto);
-        return ResponseEntity.ok("Expense posted successfully");
+        return "redirect:/expense";
+    }
+
+    @PostMapping("/updateExpense")
+    public String updateExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
+        expenseService.updateExpenseByExpenseId(expenseDto);
+        return "redirect:/expense";
     }
 
     @GetMapping
-    public List<ExpenseDto> getExpenseList() {
-        return expenseService.getExpenseList();
+    public String viewExpenseList(@NotNull Model model){
+        List<ExpenseDto> expenseDtos = expenseService.getExpenseList();
+        model.addAttribute("listExpenses", expenseDtos);
+        return "expenseList";
+    }
+
+    @GetMapping("/newExpenseForm")
+    public String showNewExpenseForm(Model model){
+        ExpenseDto expenseDto = new ExpenseDto();
+        model.addAttribute("expense", expenseDto);
+        return "newExpense";
     }
 
     @GetMapping({"/{id}/", "/{id}"})
@@ -120,9 +137,16 @@ public class ExpenseController {
         return "Expense deleted";
     }
 
-    @PutMapping({"/{id}/", "/{id}"})
-    public ResponseEntity<String> updateExpenseByExpenseId(@PathVariable("id") Long expenseId, @RequestBody ExpenseDto expenseDto) {
-        expenseService.updateExpenseByExpenseId(expenseId, expenseDto);
-        return ResponseEntity.ok("Expense updated");
+    @GetMapping("/updateExpense/{id}")
+    public String updateExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
+        ExpenseDto expenseDto = getExpenseByExpenseId(expenseId);
+        model.addAttribute("expense", expenseDto);
+        return "updateExpense";
+    }
+
+    @GetMapping("/deleteExpense/{id}")
+    public String deleteExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
+        expenseService.deleteExpenseByExpenseId(expenseId);
+        return "redirect:/expense";
     }
 }
