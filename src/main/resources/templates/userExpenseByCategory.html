@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker Web App</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <style>
+        table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 4px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Expense by Category</h1>
+
+    <div class="container my-2">
+        <h1> Summary of Total Expense by Category</h1>
+
+        <table class="table table-striped table-responsive-md">
+            <thead>
+            <tr>
+                <th>Category</th>
+                <th>Total Expense</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${expenseResults}">
+                <td th:text="${result[0]}"></td>
+                <td th:text="${result[1]}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

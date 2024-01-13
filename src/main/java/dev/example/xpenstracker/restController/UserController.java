@@ -4,12 +4,14 @@ import dev.example.xpenstracker.model.UserInfo;
 import dev.example.xpenstracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequestMapping({"/user/", "/user"})
-@RestController
+@Controller
 public class UserController {
     @Autowired
     private UserService userService;
@@ -20,25 +22,36 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserInfo> getUserList() {
-        return userService.getUserList();
+    public String getUserList(Model model){
+        List<UserInfo> userInfos = userService.getUserList();
+        model.addAttribute("listUsers", userInfos);
+        return "userList";
     }
 
-    @GetMapping({"/{userId}/", "/{userId}"})
+    @GetMapping("/newUserForm")
+    public String showNewUserForm(Model model){
+        UserInfo userInfo = new UserInfo();
+        model.addAttribute("userInfo", userInfo);
+        return "newUser";
+    }
+
+    @PostMapping("/saveUser")
+    public String addUser(@ModelAttribute("userInfo") UserInfo userInfo){
+        userService.postUserInfo(userInfo);
+        return "redirect:/user";
+    }
+
+    //@GetMapping({"/{userId}/", "/{userId}"})
     public UserInfo getUserById(@PathVariable("userId") Long userInfoId) {
         return userService.getUserById(userInfoId);
     }
 
-    @PutMapping({"/{userId}/updatePhone/", "/{userId}/updatePhone"})
-    public UserInfo updateUserPhoneNo(@PathVariable("userId") Long userInfoId,
-                                      @RequestBody String phoneNo) {
-        return userService.updateUserPhoneNo(userInfoId, phoneNo);
-    }
-
-    @PutMapping({"/{userId}/updateMail", "/{userId}/updateMail/"})
-    public UserInfo updateUserEmailId(@PathVariable("userId") Long userInfoId,
-                                      @RequestBody String emailId) {
-        return userService.updateUserEmailId(userInfoId, emailId);
+    @GetMapping("/updateUser/{id}")
+    public String updateUserInfo(@PathVariable("id") Long userInfoId,
+                                      Model model) {
+        UserInfo userInfo = getUserById(userInfoId);
+        model.addAttribute("userInfo", userInfo);
+        return "updateUser";
     }
 
 }

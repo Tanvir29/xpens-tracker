@@ -33,7 +33,7 @@ public class Expense {
     private LocalDate expenseDate;
 
     @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.PERSIST
     )
     @JoinColumn(name = "userId")
     //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})//to suppress serialization for lazy fetch

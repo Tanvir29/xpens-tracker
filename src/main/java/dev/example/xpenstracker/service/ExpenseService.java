@@ -112,8 +112,8 @@ public class ExpenseService {
         return expenseRepository.getExpenseByUserIdAndCategories(userId);
     }
 
-    public void updateExpenseByExpenseId(Long expenseId, ExpenseDto expenseDto) {
-        Expense existingExpense = expenseRepository.findById(expenseId).get();
+    public void updateExpenseByExpenseId(ExpenseDto expenseDto) {
+        Expense existingExpense = expenseRepository.findById(expenseDto.getExpenseId()).get();
 
         existingExpense.setAmount(expenseDto.getAmount());
         existingExpense.setExpenseDate(expenseDto.getExpenseDate());
