@@ -1,6 +1,5 @@
 package dev.example.xpenstracker.model;
 
-import dev.example.xpenstracker.model.enumeration.CategoryName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,9 +41,6 @@ public class Expense {
     @Column(name = "CATEGORY_NAME", nullable = false)
     @Enumerated(EnumType.STRING)
     private CategoryName categoryName;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "EXPENSE_CATEGORY_ID", referencedColumnName = "categoryId")
-//    private ExpenseCategory expenseCategory;
 
 
 }

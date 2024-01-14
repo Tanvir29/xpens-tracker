@@ -4,7 +4,7 @@ import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.dto.mapper.ExpenseDtoMapper;
 import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.model.UserInfo;
-import dev.example.xpenstracker.model.enumeration.CategoryName;
+import dev.example.xpenstracker.model.CategoryName;
 import dev.example.xpenstracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

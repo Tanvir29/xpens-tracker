@@ -1,4 +1,4 @@
-package dev.example.xpenstracker.model.enumeration;
+package dev.example.xpenstracker.model;
 
 public enum CategoryName {
     GROCERY,

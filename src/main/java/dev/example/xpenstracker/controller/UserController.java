@@ -1,4 +1,4 @@
-package dev.example.xpenstracker.restController;
+package dev.example.xpenstracker.controller;
 
 import dev.example.xpenstracker.model.UserInfo;
 import dev.example.xpenstracker.service.UserService;
