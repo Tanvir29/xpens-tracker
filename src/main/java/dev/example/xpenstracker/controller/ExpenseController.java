@@ -1,10 +1,10 @@
-package dev.example.xpenstracker.restController;
+package dev.example.xpenstracker.controller;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
-import dev.example.xpenstracker.model.enumeration.CategoryName;
+import dev.example.xpenstracker.model.CategoryName;
 import dev.example.xpenstracker.service.ExpenseService;
 import dev.example.xpenstracker.service.UserService;
-import dev.example.xpenstracker.util.ExpenseResponse;
+import dev.example.xpenstracker.controller.util.ExpenseResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,6 +25,7 @@ interface ExpenseOperation {
 @Controller
 //@RequestMapping({"/expense/", "/expense"})
 public class ExpenseController {
+
     @Autowired
     private ExpenseService expenseService;
     @Autowired
@@ -33,13 +34,13 @@ public class ExpenseController {
     @PostMapping("/expense/saveExpense")
     public String saveExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.postExpense(expenseDto);
-        return "redirect:/expense";
+        return "redirect:/expense/";
     }
 
     @PostMapping("/expense/updateExpense")
     public String updateExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.updateExpenseByExpenseId(expenseDto);
-        return "redirect:/expense";
+        return "redirect:/expense/";
     }
 
     @GetMapping("/expense/")
@@ -147,6 +148,6 @@ public class ExpenseController {
     @GetMapping("/expense/deleteExpense/{id}")
     public String deleteExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
         expenseService.deleteExpenseByExpenseId(expenseId);
-        return "redirect:/expense";
+        return "redirect:/expense/";
     }
 }

@@ -1,7 +1,7 @@
 package dev.example.xpenstracker.repository;
 
 import dev.example.xpenstracker.model.Expense;
-import dev.example.xpenstracker.model.enumeration.CategoryName;
+import dev.example.xpenstracker.model.CategoryName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

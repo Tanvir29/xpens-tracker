@@ -1,4 +1,4 @@
-package dev.example.xpenstracker.util;
+package dev.example.xpenstracker.controller.util;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
 
