@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 
 public class ExpenseDto {
-    private Long expenseId;
-    private Double amount;
+    private Long id;
+    private long amount;
     private LocalDate expenseDate;
     private Long userId;
     private CategoryName categoryName;

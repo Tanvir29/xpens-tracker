@@ -12,79 +12,72 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    public List<Expense> findByUserInfoUserId(Long userInfoId);
+    public List<Expense> findByUserInfoId(long userId);
 
-    public List<Expense> findByUserInfoUserIdAndCategoryName
-            (Long userId, CategoryName categoryName);
+    public List<Expense> findByUserInfoIdAndCategoryName
+            (long userId, CategoryName categoryName);
 
-    public List<Expense> findByUserInfoUserIdAndExpenseDateBetween
-            (Long userInfoId, LocalDate start, LocalDate end);
+    public List<Expense> findByUserInfoIdAndExpenseDateBetween
+            (long userId, LocalDate start, LocalDate end);
 
-    public List<Expense> findByUserInfoUserIdAndCategoryNameAndExpenseDateBetween
-            (Long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate);
+    public List<Expense> findByUserInfoIdAndCategoryNameAndExpenseDateBetween
+            (long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate);
 
-    @Query(
-            value = "SELECT SUM(amount) AS total_expenses FROM expense " +
-                    "WHERE user_id = :userId",
-            nativeQuery = true
-    )
-    public Long getTotalExpenseForUser(@Param("userId") Long userInfoId);
+    @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +
+            "from Expense e " +
+            "where e.userInfo.id = :userId ")
 
-    @Query(
-            value = "SELECT SUM(amount) AS total_expenses FROM expense " +
-                    "WHERE user_id = :userId " +
-                    "AND expense_date BETWEEN :start AND :end",
-            nativeQuery = true
-    )
+    public long getTotalExpenseForUser(@Param("userId") long userInfoId);
 
-    public Long getTotalExpenseForUserBetweenTimePeriod(@Param("userId") Long userInfoId,
-                                                        @Param("start") LocalDate startDate,
-                                                        @Param("end") LocalDate endDate);
 
-    @Query(
-            value = "SELECT SUM(amount) AS total_expenses FROM expense " +
-                    "WHERE user_id = :userId " +
-                    "AND category_name = :category " +
-                    "AND expense_date BETWEEN :start AND :end",
-            nativeQuery = true
-    )
-    public Long getTotalExpenseForUserByCategoryInTimePeriod
-            (@Param("userId") Long userInfoId,
-             @Param("category") String categoryName,
-             @Param("start") LocalDate startDate,
-             @Param("end") LocalDate endDate);
+    @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +
+            "from Expense e " +
+            "where e.userInfo.id = :userId " +
+            "and e.expenseDate between :startDate and :endDate")
 
-    @Query(
-            value = "SELECT COALESCE(SUM(amount), 0) AS total_expenses FROM expense " +
-                    "WHERE user_id = :userId " +
-                    "AND category_name = :category ",
-            nativeQuery = true
-    )
-    public Long getTotalExpenseForUserByCategory
-            (@Param("userId") Long userInfoId,
-             @Param("category") String categoryName);
+    public long getTotalExpenseForUserBetweenTimePeriod(@Param("userId") long userId,
+                                                        @Param("startDate") LocalDate startDate,
+                                                        @Param("endDate") LocalDate endDate);
 
-    @Query(
-            value = "SELECT COALESCE(category_name, 'total_expense') AS category_name, COALESCE(SUM(amount), 0) AS category_expense " +
-                    "FROM expense " +
-                    "WHERE user_id = :userId " +
-                    "AND expense_date BETWEEN :startDate AND :endDate " +
-                    "GROUP BY category_name " +
-                    "WITH ROLLUP",
-            nativeQuery = true
-    )
-    public List<Object[]> getExpenseByUserIdAndCategoriesInTimePeriod
-            (@Param("userId") Long userId,
+    @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +
+            "from Expense e " +
+            "where e.userInfo.id = :userId " +
+            "and e.categoryName = :categoryName " +
+            "and e.expenseDate between :startDate and :endDate")
+
+    public long getTotalExpenseForUserByCategoryInTimePeriod
+            (@Param("userId") long userId,
+             @Param("categoryName") CategoryName categoryName,
              @Param("startDate") LocalDate startDate,
              @Param("endDate") LocalDate endDate);
 
+    @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +
+            "from Expense e " +
+            "where e.userInfo.id = :userId " +
+            "and e.categoryName = :categoryName ")
+
+    public long getTotalExpenseForUserByCategory
+            (@Param("userId") long userId,
+             @Param("categoryName") CategoryName categoryName);
+
     @Query(
-            value = "SELECT COALESCE(category_name, 'total_expense') AS category_name, COALESCE(SUM(amount), 0) AS category_expense " +
-                    "FROM expense " +
-                    "WHERE user_id = :userId " +
-                    "GROUP BY category_name " +
-                    "WITH ROLLUP",
-            nativeQuery = true
+            "select e.categoryName as Category, SUM(e.amount) as TotalExpense " +
+            "from Expense e " +
+            "where e.userInfo.id = :userId " +
+            "and e.expenseDate between :startDate and :endDate " +
+            "GROUP BY Category ORDER BY TotalExpense "
     )
-    public List<Object[]> getExpenseByUserIdAndCategories(@Param("userId") Long userId);
+    public List<Object[]> getExpenseByUserIdAndCategoriesInTimePeriod
+            (@Param("userId") long userId,
+             @Param("startDate") LocalDate startDate,
+             @Param("endDate") LocalDate endDate);
+
+@Query(
+        "select e.categoryName as Category, SUM(e.amount) as TotalExpense " +
+        "from Expense e " +
+        "where e.userInfo.id = :userId " +
+        "GROUP BY Category ORDER BY TotalExpense "
+    )
+    public List<Object[]> getExpenseByUserIdAndCategories(@Param("userId") long userId);
+
 }

@@ -41,18 +41,18 @@
         </thead>
         <tbody>
         <tr th:each="person : ${listUsers}">
-            <td th:text="${person.userId}"></td>
+            <td th:text="${person.id}"></td>
             <td th:text="${person.firstName}"></td>
             <td th:text="${person.lastName}"></td>
             <td th:text="${person.phoneNo}"></td>
-            <td th:text="${person.emailId}"></td>
-            <td> <a th:href="@{/user/updateUser/{id}(id=${person.userId})}"
+            <td th:text="${person.email}"></td>
+            <td> <a th:href="@{/user/updateUser/{id}(id=${person.Id})}"
                     class="btn btn-primary btn-sm mb-2"> Update </a>
             </td>
-            <td> <a th:href="@{/user/{id}/expenseByCategory(id=${person.userId})}"
+            <td> <a th:href="@{/user/{id}/expenseByCategory(id=${person.Id})}"
                     class="btn btn-primary btn-sm mb-2"> View </a>
             </td>
-            <td> <a th:href="@{/user/{id}/(id=${person.userId})}"
+            <td> <a th:href="@{/user/{id}/(id=${person.id})}"
                     class="btn btn-primary btn-sm mb-2"> View </a>
             </td>
         </tr>

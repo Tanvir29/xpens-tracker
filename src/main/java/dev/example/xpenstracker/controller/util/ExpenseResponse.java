@@ -6,12 +6,12 @@ import java.util.List;
 
 public class ExpenseResponse {
     private List<ExpenseDto> expenseList;
-    private Long totalExpense;
+    private long totalExpense;
 
     public ExpenseResponse() {
     }
 
-    public ExpenseResponse(List<ExpenseDto> expenseList, Long totalExpense) {
+    public ExpenseResponse(List<ExpenseDto> expenseList, long totalExpense) {
         this.expenseList = expenseList;
         this.totalExpense = totalExpense;
     }
@@ -24,11 +24,11 @@ public class ExpenseResponse {
         this.expenseList = expenseList;
     }
 
-    public Long getTotalExpense() {
+    public long getTotalExpense() {
         return totalExpense;
     }
 
-    public void setTotalExpense(Long totalExpense) {
+    public void setTotalExpense(long totalExpense) {
         this.totalExpense = totalExpense;
     }
 }

@@ -9,8 +9,11 @@ import java.util.List;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository;
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public UserInfo postUserInfo(UserInfo userInfo) {
         return userRepository.save(userInfo);
@@ -30,9 +33,9 @@ public class UserService {
         return userRepository.save(userRecord);
     }
 
-    public UserInfo updateUserEmailId(Long userInfoId, String emailId) {
+    public UserInfo updateUserEmailId(Long userInfoId, String email) {
         UserInfo userRecord = userRepository.findById(userInfoId).get();
-        userRecord.setEmailId(emailId);
+        userRecord.setEmail(email);
         return userRepository.save(userRecord);
     }
 }

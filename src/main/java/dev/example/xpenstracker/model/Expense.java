@@ -2,45 +2,87 @@ package dev.example.xpenstracker.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Table(name = "EXPENSE")
 
 public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EXPENSE_ID")
-    private Long expenseId;
+    private Long id;
 
-    @NotNull(message = "Provide the spent amount")
-    @Column(name = "AMOUNT", nullable = false)
-    private Double amount;
+    @NotNull
+    private long amount;
 
-    @Column(name = "EXPENSE_DATE", nullable = false)
-    @NotNull(message = "Provide valid date in yyyy-mm-dd format")
+    @NotNull
     private LocalDate expenseDate;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.PERSIST
-    )
-    @JoinColumn(name = "userId")
-    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})//to suppress serialization for lazy fetch
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private UserInfo userInfo;
 
-    @Column(name = "CATEGORY_NAME", nullable = false)
     @Enumerated(EnumType.STRING)
     private CategoryName categoryName;
 
+    public Expense() {
+    }
 
+    public Expense(long amount, LocalDate expenseDate, UserInfo userInfo, CategoryName categoryName) {
+        this.amount = amount;
+        this.expenseDate = expenseDate;
+        this.userInfo = userInfo;
+        this.categoryName = categoryName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(long amount) {
+        this.amount = amount;
+    }
+
+    public LocalDate getExpenseDate() {
+        return expenseDate;
+    }
+
+    public void setExpenseDate(LocalDate expenseDate) {
+        this.expenseDate = expenseDate;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    public CategoryName getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(CategoryName categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", expenseDate=" + expenseDate +
+                ", userInfo=" + userInfo +
+                ", categoryName=" + categoryName +
+                '}';
+    }
 }
