@@ -16,25 +16,31 @@ import java.util.stream.Collectors;
 @Service
 //@RequiredArgsConstructor
 public class ExpenseService {
+    private final ExpenseRepository expenseRepository;
+    private final ExpenseDtoMapper expenseDtoMapper;
+    private final UserService userService;
     @Autowired
-    private ExpenseRepository expenseRepository;
-    @Autowired
-    private ExpenseDtoMapper expenseDtoMapper;
-    @Autowired
-    private UserService userService;
+    public ExpenseService(ExpenseRepository expenseRepository, ExpenseDtoMapper expenseDtoMapper, UserService userService) {
+        this.expenseRepository = expenseRepository;
+        this.expenseDtoMapper = expenseDtoMapper;
+        this.userService = userService;
+    }
+
 
     public void postExpense(ExpenseDto expenseDto) {
         UserInfo userInfo = userService.getUserById(expenseDto.getUserId());
-        Expense expense = Expense.builder().
-                amount(expenseDto.getAmount()).
-                expenseDate(expenseDto.getExpenseDate()).
-                userInfo(userInfo).
-                categoryName(expenseDto.getCategoryName()).
-                build();
+        Expense expense = new Expense(expenseDto.getAmount(),
+                                        expenseDto.getExpenseDate(),
+                                        userInfo,
+                                        expenseDto.getCategoryName());
         expenseRepository.save(expense);
     }
 
     public List<ExpenseDto> getExpenseList() {
+        for (Expense e : expenseRepository.findAll()){
+            System.out.println(e.toString());
+        };
+
         return expenseRepository.findAll()
                 .stream()
                 .map(expenseDtoMapper)
@@ -42,7 +48,7 @@ public class ExpenseService {
     }
 
     public List<ExpenseDto> getExpenseListForUsers(Long userInfoId) {
-        return expenseRepository.findByUserInfoUserId(userInfoId)
+        return expenseRepository.findByUserInfoId(userInfoId)
                 .stream()
                 .map(expenseDtoMapper)
                 .collect(Collectors.toList());
@@ -59,22 +65,22 @@ public class ExpenseService {
     }
 
     public List<ExpenseDto> getExpenseListByUserIdAndCategory(Long userId, CategoryName categoryName) {
-        return expenseRepository.findByUserInfoUserIdAndCategoryName(userId, categoryName)
+        return expenseRepository.findByUserInfoIdAndCategoryName(userId, categoryName)
                 .stream()
                 .map(expenseDtoMapper)
                 .collect(Collectors.toList());
     }
 
-    public Long getTotalExpenseForUser(Long userInfoId) {
+    public long getTotalExpenseForUser(Long userInfoId) {
         return expenseRepository.getTotalExpenseForUser(userInfoId);
     }
 
-    public Long getTotalExpenseForUserBetweenTimePeriod(Long userInfoId, LocalDate start, LocalDate end) {
+    public long getTotalExpenseForUserBetweenTimePeriod(Long userInfoId, LocalDate start, LocalDate end) {
         return expenseRepository.getTotalExpenseForUserBetweenTimePeriod(userInfoId, start, end);
     }
 
     public List<ExpenseDto> getExpenseListInTimePeriodForUsers(Long userInfoId, LocalDate start, LocalDate end) {
-        return expenseRepository.findByUserInfoUserIdAndExpenseDateBetween(userInfoId, start, end)
+        return expenseRepository.findByUserInfoIdAndExpenseDateBetween(userInfoId, start, end)
                 .stream()
                 .map(expenseDtoMapper)
                 .collect(Collectors.toList());
@@ -83,23 +89,21 @@ public class ExpenseService {
 
     public List<ExpenseDto> getExpenseListByCategoryInTimePeriodForUsers
             (Long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate) {
-        return expenseRepository.findByUserInfoUserIdAndCategoryNameAndExpenseDateBetween
+        return expenseRepository.findByUserInfoIdAndCategoryNameAndExpenseDateBetween
                         (userId, categoryName, startDate, endDate)
                 .stream()
                 .map(expenseDtoMapper)
                 .collect(Collectors.toList());
     }
 
-    public Long getTotalExpenseForUserByCategoryInTimePeriod
+    public long getTotalExpenseForUserByCategoryInTimePeriod
             (Long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate) {
-        String categoryNameString = categoryName.name();
         return expenseRepository.getTotalExpenseForUserByCategoryInTimePeriod
-                (userId, categoryNameString, startDate, endDate);
+                (userId, categoryName, startDate, endDate);
     }
 
-    public Long getTotalExpenseForUserByCategory(Long userId, CategoryName categoryName) {
-        String categoryNameString = categoryName.name();
-        return expenseRepository.getTotalExpenseForUserByCategory(userId, categoryNameString);
+    public long getTotalExpenseForUserByCategory(Long userId, CategoryName categoryName) {
+        return expenseRepository.getTotalExpenseForUserByCategory(userId, categoryName);
     }
 
     public List<Object[]> getExpenseByUserIdAndCategoriesInTimePeriod
@@ -113,7 +117,7 @@ public class ExpenseService {
     }
 
     public void updateExpenseByExpenseId(ExpenseDto expenseDto) {
-        Expense existingExpense = expenseRepository.findById(expenseDto.getExpenseId()).get();
+        Expense existingExpense = expenseRepository.findById(expenseDto.getId()).get();
 
         existingExpense.setAmount(expenseDto.getAmount());
         existingExpense.setExpenseDate(expenseDto.getExpenseDate());

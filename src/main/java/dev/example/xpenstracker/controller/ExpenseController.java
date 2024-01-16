@@ -26,10 +26,13 @@ interface ExpenseOperation {
 //@RequestMapping({"/expense/", "/expense"})
 public class ExpenseController {
 
+    private final ExpenseService expenseService;
+    private final UserService userService;
     @Autowired
-    private ExpenseService expenseService;
-    @Autowired
-    private UserService userService;
+    public ExpenseController(ExpenseService expenseService, UserService userService) {
+        this.expenseService = expenseService;
+        this.userService = userService;
+    }
 
     @PostMapping("/expense/saveExpense")
     public String saveExpense(@ModelAttribute("expense") ExpenseDto expenseDto){

@@ -4,45 +4,89 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Table(name = "USER", uniqueConstraints = {
-        @UniqueConstraint(name = "unique_phone", columnNames = "PHONE_NO"),
-        @UniqueConstraint(name = "unique_email", columnNames = "EMAIL_ID")
-})
+
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID")
-    private Long userId;
+    private Long id;
 
-    @NotBlank(message = "First name cannot be empty")
-    @Column(name = "FIRST_NAME", nullable = false)
+    @NotBlank
     private String firstName;
 
-    @NotBlank(message = "Second name cannot be empty")
-    @Column(name = "LAST_NAME", nullable = false)
+    @NotBlank
     private String lastName;
 
-    @NotBlank(message = "Provide valid phone number")
-    @Column(name = "PHONE_NO", nullable = false)
+    @NotBlank
+    @Column(unique = true)
     private String phoneNo;
 
-    @NotBlank(message = "Provide valid email address")
-    @Column(name = "EMAIL_ID", nullable = false)
-    @Email(message = "Invalid mail format")
-    private String emailId;
+    @NotBlank
+    @Email
+    @Column(unique = true)
+    private String email;
 
     @JsonIgnore
-    @NotBlank(message = "Provide your password")
-    @Column(name = "PASSWORD", nullable = false)
+    @NotBlank
     private String password;
+
+    public UserInfo() {
+    }
+
+    public UserInfo(String firstName, String lastName, String phoneNo, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNo = phoneNo;
+        this.email = email;
+        this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

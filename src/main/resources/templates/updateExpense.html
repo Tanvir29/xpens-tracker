@@ -16,7 +16,7 @@
 
     <form action="#" th:action="@{/expense/updateExpense}" th:object = "${expense}" method="POST">
 
-        <input type="hidden" th:field = *{expenseId}/>
+        <input type="hidden" th:field = *{id}/>
 
         <input type="text" th:field = "*{amount}"
                placeholder="amount" class="form-control mb-3">

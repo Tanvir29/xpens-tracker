@@ -2,6 +2,7 @@ package dev.example.xpenstracker.dto.mapper;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.model.Expense;
+import dev.example.xpenstracker.model.UserInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
@@ -10,11 +11,12 @@ import java.util.function.Function;
 public class ExpenseDtoMapper implements Function<Expense, ExpenseDto> {
     @Override
     public ExpenseDto apply(Expense expense) {
+
         return new ExpenseDto(
-                expense.getExpenseId(),
+                expense.getId(),
                 expense.getAmount(),
                 expense.getExpenseDate(),
-                expense.getUserInfo().getUserId(),
+                expense.getUserInfo().getId(),
                 expense.getCategoryName()
         );
     }

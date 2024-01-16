@@ -13,8 +13,11 @@ import java.util.List;
 @RequestMapping({"/user/", "/user"})
 @Controller
 public class UserController {
+    private final UserService userService;
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public UserInfo postUserInfo(@Valid @RequestBody UserInfo userInfo) {
@@ -41,7 +44,6 @@ public class UserController {
         return "redirect:/user";
     }
 
-    //@GetMapping({"/{userId}/", "/{userId}"})
     public UserInfo getUserById(@PathVariable("userId") Long userInfoId) {
         return userService.getUserById(userInfoId);
     }
