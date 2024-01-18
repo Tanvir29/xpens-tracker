@@ -19,11 +19,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public UserInfo postUserInfo(@Valid @RequestBody UserInfo userInfo) {
-        return userService.postUserInfo(userInfo);
-    }
-
     @GetMapping
     public String getUserList(Model model){
         List<UserInfo> userInfos = userService.getUserList();
@@ -39,19 +34,19 @@ public class UserController {
     }
 
     @PostMapping("/saveUser")
-    public String addUser(@ModelAttribute("userInfo") UserInfo userInfo){
+    public String addUser(@Valid @ModelAttribute("userInfo") UserInfo userInfo){
         userService.postUserInfo(userInfo);
         return "redirect:/user";
     }
 
-    public UserInfo getUserById(@PathVariable("userId") Long userInfoId) {
-        return userService.getUserById(userInfoId);
+    public UserInfo getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @GetMapping("/updateUser/{id}")
-    public String updateUserInfo(@PathVariable("id") Long userInfoId,
+    public String updateUserInfo(@PathVariable Long id,
                                       Model model) {
-        UserInfo userInfo = getUserById(userInfoId);
+        UserInfo userInfo = getUserById(id);
         model.addAttribute("userInfo", userInfo);
         return "updateUser";
     }

@@ -2,11 +2,14 @@ package dev.example.xpenstracker.controller;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.model.CategoryName;
+import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.service.ExpenseService;
 import dev.example.xpenstracker.service.UserService;
 import dev.example.xpenstracker.controller.util.ExpenseResponse;
+import jakarta.validation.Valid;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,8 +37,13 @@ public class ExpenseController {
         this.userService = userService;
     }
 
+    @ModelAttribute("categories")
+    public CategoryName[] categories(){
+        return CategoryName.values();
+    }
+
     @PostMapping("/expense/saveExpense")
-    public String saveExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
+    public String saveExpense(@Valid @ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.postExpense(expenseDto);
         return "redirect:/expense/";
     }
@@ -47,9 +55,20 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/")
-    public String viewExpenseList(@NotNull Model model){
-        List<ExpenseDto> expenseDtos = expenseService.getExpenseList();
-        model.addAttribute("listExpenses", expenseDtos);
+    public String viewExpenseList(@RequestParam(defaultValue = "0") int pageNo,
+                                  @RequestParam(defaultValue = "8") int pageSize,
+                                  @RequestParam(defaultValue = "id") String sortField,
+                                  @RequestParam(defaultValue = "ASC") String sortDirection,
+                                  Model model){
+
+        Page<Expense> page  = expenseService.getExpenseList(pageNo, pageSize, sortField, sortDirection );
+        List<Expense> expenses = page.getContent();
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("listExpenses", expenses);
+        model.addAttribute("sortBy", sortField);
+        model.addAttribute("sortOrder", sortDirection);
         return "expenseList";
     }
 
@@ -60,31 +79,31 @@ public class ExpenseController {
         return "newExpense";
     }
 
-    public ExpenseDto getExpenseByExpenseId(@PathVariable("id") Long expenseId) {
-        return expenseService.getExpenseByExpenseId(expenseId);
+    public ExpenseDto getExpenseByExpenseId(@PathVariable Long id) {
+        return expenseService.getExpenseByExpenseId(id);
     }
 
     @GetMapping("/user/{id}/expenseByCategory")
-    public String getExpenseByUserIdAndAllCategory(@PathVariable("id") Long userId,
-                                                           @RequestParam(value = "startDate", required = false)
+    public String getCategoryWiseUserExpenses(@PathVariable Long id,
+                                              @RequestParam(value = "startDate", required = false)
                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                                           @RequestParam(value = "endDate", required = false)
+                                              @RequestParam(value = "endDate", required = false)
                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                                            Model model) {
+                                              Model model) {
 
         List<Object[]> expenseResults;
         if (startDate != null && endDate != null) {
-            expenseResults = expenseService.getExpenseByUserIdAndCategoriesInTimePeriod
-                    (userId, startDate, endDate);
+            expenseResults = expenseService.categoryWiseUserExpensesInTimePeriod
+                    (id, startDate, endDate);
         } else {
-            expenseResults = expenseService.getExpenseByUserIdAndCategories(userId);
+            expenseResults = expenseService.categoryWiseUserExpenses(id);
         }
         model.addAttribute("expenseResults", expenseResults);
         return "userExpenseByCategory";
     }
 
-    @GetMapping({"/user/{userId}", "/user/{userId}/"})
-    public String getExpensesForUser(@PathVariable("userId") Long userId,
+    @GetMapping({"/user/{id}", "/user/{id}/"})
+    public String getUserExpenses(@PathVariable Long id,
                                               @RequestParam(value = "categoryName", required = false)
                                               CategoryName categoryName,
                                               @RequestParam(value = "startDate", required = false)
@@ -95,35 +114,35 @@ public class ExpenseController {
 
         ExpenseOperation operationWithTimePeriod = response -> {
             response.setExpenseList
-                    (expenseService.getExpenseListInTimePeriodForUsers(userId, startDate, endDate));
+                    (expenseService.expenseListInTimePeriod(id, startDate, endDate));
             response.setTotalExpense
-                    (expenseService.getTotalExpenseForUserBetweenTimePeriod(userId, startDate, endDate));
+                    (expenseService.totalExpenseInTimePeriod(id, startDate, endDate));
             return response;
         };
 
         ExpenseOperation operationWithoutTimePeriod = response -> {
             response.setExpenseList
-                    (expenseService.getExpenseListForUsers(userId));
+                    (expenseService.userExpenseList(id));
             response.setTotalExpense(
-                    expenseService.getTotalExpenseForUser(userId));
+                    expenseService.totalExpense(id));
             return response;
         };
 
         ExpenseOperation operationWithCategoryAndTimePeriod = response -> {
             response.setExpenseList
-                    (expenseService.getExpenseListByCategoryInTimePeriodForUsers
-                            (userId, categoryName, startDate, endDate));
+                    (expenseService.expenseListForSpecificCategoryInTimePeriod
+                            (id, categoryName, startDate, endDate));
             response.setTotalExpense
-                    (expenseService.getTotalExpenseForUserByCategoryInTimePeriod
-                            (userId, categoryName, startDate, endDate));
+                    (expenseService.totalExpenseForSpecificCategoryInTimePeriod
+                            (id, categoryName, startDate, endDate));
             return response;
         };
 
         ExpenseOperation operationWithCategoryWithoutTimePeriod = response -> {
             response.setExpenseList(
-                    expenseService.getExpenseListByUserIdAndCategory(userId, categoryName));
+                    expenseService.expenseListForSpecificCategory(id, categoryName));
             response.setTotalExpense
-                    (expenseService.getTotalExpenseForUserByCategory(userId, categoryName));
+                    (expenseService.totalExpenseForSpecificCategory(id, categoryName));
             return response;
         };
 
@@ -142,15 +161,15 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/updateExpense/{id}")
-    public String updateExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
-        ExpenseDto expenseDto = getExpenseByExpenseId(expenseId);
+    public String updateExpenseByExpenseId(@PathVariable Long id, Model model) {
+        ExpenseDto expenseDto = getExpenseByExpenseId(id);
         model.addAttribute("expense", expenseDto);
         return "updateExpense";
     }
 
     @GetMapping("/expense/deleteExpense/{id}")
-    public String deleteExpenseByExpenseId(@PathVariable("id") Long expenseId, Model model) {
-        expenseService.deleteExpenseByExpenseId(expenseId);
+    public String deleteExpenseByExpenseId(@PathVariable Long id, Model model) {
+        expenseService.deleteExpenseByExpenseId(id);
         return "redirect:/expense/";
     }
 }

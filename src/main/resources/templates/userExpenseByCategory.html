@@ -22,26 +22,34 @@
 </head>
 
 <body>
-    <h1>Expense by Category</h1>
 
-    <div class="container my-2">
-        <h1> Summary of Total Expense by Category</h1>
+<div class="container my-2">
+    <form action="#" method="get">
+        <label for="startDate">Enter Start Date(DD-MM-YYYY):</label>
+        <input type="date" id="startDate" name="startDate">
 
-        <table class="table table-striped table-responsive-md">
-            <thead>
-            <tr>
-                <th>Category</th>
-                <th>Total Expense</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="result : ${expenseResults}">
-                <td th:text="${result[0]}"></td>
-                <td th:text="${result[1]}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        <label for="endDate">Enter End Date(DD-MM-YYYY):</label>
+        <input type="date" id="endDate" name="endDate">
+        <button type="submit">Submit</button>
+    </form>
+
+    <h1> Summary of Total Expense by Category</h1>
+
+    <table class="table table-striped table-responsive-md">
+        <thead>
+        <tr>
+            <th>Category</th>
+            <th>Total Expense</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result : ${expenseResults}">
+            <td th:text="${result[0]}"></td>
+            <td th:text="${result[1]}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>
