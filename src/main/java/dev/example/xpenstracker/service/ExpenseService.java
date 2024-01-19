@@ -6,6 +6,7 @@ import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.model.UserInfo;
 import dev.example.xpenstracker.model.CategoryName;
 import dev.example.xpenstracker.repository.ExpenseRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-//@RequiredArgsConstructor
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ExpenseDtoMapper expenseDtoMapper;
@@ -51,6 +51,7 @@ public class ExpenseService {
         return expenseRepository.findByUserInfoId(userInfoId);
     }
 
+    @Transactional
     public void deleteExpenseByExpenseId(Long expenseId) {
         expenseRepository.deleteById(expenseId);
     }
@@ -102,6 +103,7 @@ public class ExpenseService {
         return expenseRepository.getExpenseByUserIdAndCategories(userId);
     }
 
+    @Transactional
     public void updateExpenseByExpenseId(ExpenseDto expenseDto) {
         Expense existingExpense = expenseRepository.findById(expenseDto.getId()).get();
 

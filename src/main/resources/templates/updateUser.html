@@ -14,7 +14,7 @@
     <hr>
     <h2> Update User Details </h2>
 
-    <form action="#" th:action="@{/user/saveUser}" th:object = "${userInfo}" method="POST">
+    <form action="#" th:action="@{/user/updateUser}" th:object = "${userInfo}" method="POST">
 
         <input type="hidden" th:field = *{id}/>
 

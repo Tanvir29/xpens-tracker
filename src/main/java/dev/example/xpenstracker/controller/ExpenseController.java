@@ -7,7 +7,6 @@ import dev.example.xpenstracker.service.ExpenseService;
 import dev.example.xpenstracker.service.UserService;
 import dev.example.xpenstracker.controller.util.ExpenseResponse;
 import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,7 +25,6 @@ interface ExpenseOperation {
 }
 
 @Controller
-//@RequestMapping({"/expense/", "/expense"})
 public class ExpenseController {
 
     private final ExpenseService expenseService;
@@ -42,21 +40,39 @@ public class ExpenseController {
         return CategoryName.values();
     }
 
-    @PostMapping("/expense/saveExpense")
-    public String saveExpense(@Valid @ModelAttribute("expense") ExpenseDto expenseDto){
+    @PostMapping("/user/{id}/saveExpense/")
+    public String saveExpense(@PathVariable Long id, @Valid @ModelAttribute("expense") ExpenseDto expenseDto){
         expenseService.postExpense(expenseDto);
-        return "redirect:/expense/";
+        return "redirect:/user/" + id;
     }
 
-    @PostMapping("/expense/updateExpense")
-    public String updateExpense(@ModelAttribute("expense") ExpenseDto expenseDto){
+    @PostMapping("/user/{id}/updateExpense/")
+    public String updateExpense(@ModelAttribute("expense") ExpenseDto expenseDto,
+                                @PathVariable Long id){
         expenseService.updateExpenseByExpenseId(expenseDto);
-        return "redirect:/expense/";
+        return "redirect:/user/" + id + "/expenseList/";
+    }
+    @GetMapping("/user/{id}/newExpenseForm/")
+    public String showNewExpenseForm(@PathVariable Long id, Model model){
+        ExpenseDto expenseDto = new ExpenseDto();
+        expenseDto.setUserId(id);
+        model.addAttribute("expense", expenseDto);
+        model.addAttribute("userInfoId", id);
+        return "newExpense";
+    }
+    @GetMapping("/user/{userId}/expenseList/{id}/updateExpense/")
+    public String updateExpenseForm(@PathVariable Long id,
+                                    @PathVariable Long userId,
+                                    Model model) {
+        ExpenseDto expenseDto = getExpenseByExpenseId(id);
+        model.addAttribute("expense", expenseDto);
+        model.addAttribute("userInfoId", userId);
+        return "updateExpense";
     }
 
     @GetMapping("/expense/")
     public String viewExpenseList(@RequestParam(defaultValue = "0") int pageNo,
-                                  @RequestParam(defaultValue = "8") int pageSize,
+                                  @RequestParam(defaultValue = "12") int pageSize,
                                   @RequestParam(defaultValue = "id") String sortField,
                                   @RequestParam(defaultValue = "ASC") String sortDirection,
                                   Model model){
@@ -72,23 +88,16 @@ public class ExpenseController {
         return "expenseList";
     }
 
-    @GetMapping("/expense/newExpenseForm")
-    public String showNewExpenseForm(Model model){
-        ExpenseDto expenseDto = new ExpenseDto();
-        model.addAttribute("expense", expenseDto);
-        return "newExpense";
-    }
-
     public ExpenseDto getExpenseByExpenseId(@PathVariable Long id) {
         return expenseService.getExpenseByExpenseId(id);
     }
 
-    @GetMapping("/user/{id}/expenseByCategory")
+    @GetMapping("/user/{id}/expenseByCategory/")
     public String getCategoryWiseUserExpenses(@PathVariable Long id,
                                               @RequestParam(value = "startDate", required = false)
-                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                               @RequestParam(value = "endDate", required = false)
-                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                                               Model model) {
 
         List<Object[]> expenseResults;
@@ -102,15 +111,15 @@ public class ExpenseController {
         return "userExpenseByCategory";
     }
 
-    @GetMapping({"/user/{id}", "/user/{id}/"})
+    @GetMapping("/user/{id}/expenseList/")
     public String getUserExpenses(@PathVariable Long id,
-                                              @RequestParam(value = "categoryName", required = false)
-                                              CategoryName categoryName,
-                                              @RequestParam(value = "startDate", required = false)
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                              @RequestParam(value = "endDate", required = false)
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                                Model model) {
+                                  @RequestParam(value = "categoryName", required = false)
+                                  CategoryName categoryName,
+                                  @RequestParam(value = "startDate", required = false)
+                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                  @RequestParam(value = "endDate", required = false)
+                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                  Model model) {
 
         ExpenseOperation operationWithTimePeriod = response -> {
             response.setExpenseList
@@ -157,19 +166,15 @@ public class ExpenseController {
 
         ExpenseResponse expenseResponse = operations.get(key).apply(new ExpenseResponse());
         model.addAttribute("expenseResponse", expenseResponse);
+        model.addAttribute("userInfoId", id);
         return "userExpenseList";
     }
 
-    @GetMapping("/expense/updateExpense/{id}")
-    public String updateExpenseByExpenseId(@PathVariable Long id, Model model) {
-        ExpenseDto expenseDto = getExpenseByExpenseId(id);
-        model.addAttribute("expense", expenseDto);
-        return "updateExpense";
-    }
-
-    @GetMapping("/expense/deleteExpense/{id}")
-    public String deleteExpenseByExpenseId(@PathVariable Long id, Model model) {
+    @GetMapping("/user/{userId}/expenseList/{id}/deleteExpense/")
+    public String deleteExpenseByExpenseId(@PathVariable Long userId,
+                                           @PathVariable Long id,
+                                           Model model) {
         expenseService.deleteExpenseByExpenseId(id);
-        return "redirect:/expense/";
+        return "redirect:/user/" + userId + "/expenseList/";
     }
 }

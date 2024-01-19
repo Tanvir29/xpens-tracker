@@ -39,11 +39,24 @@ public class UserController {
         return "redirect:/user";
     }
 
+    @PostMapping("/updateUser")
+    public String updateUser(@Valid @ModelAttribute("userInfo") UserInfo userInfo){
+        userService.postUserInfo(userInfo);
+        return "redirect:/user/" + userInfo.getId();
+    }
+
     public UserInfo getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/updateUser/{id}")
+    @GetMapping("/{id}")
+    public String userHomePage(@PathVariable Long id,
+                               Model model){
+        UserInfo userInfo = getUserById(id);
+        model.addAttribute("userInfo", userInfo);
+        return "userPage";
+    }
+    @GetMapping("/{id}/update/")
     public String updateUserInfo(@PathVariable Long id,
                                       Model model) {
         UserInfo userInfo = getUserById(id);
