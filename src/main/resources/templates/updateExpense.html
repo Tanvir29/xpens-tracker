@@ -14,21 +14,22 @@
     <hr>
     <h2> Update Expense </h2>
 
-    <form action="#" th:action="@{/expense/updateExpense}" th:object = "${expense}" method="POST">
+    <form action="#" th:action="@{/user/__${#strings.toString(userInfoId)}__/updateExpense/}" th:object = "${expense}" method="POST">
 
         <input type="hidden" th:field = *{id}/>
 
-        <input type="text" th:field = "*{amount}"
-               placeholder="amount" class="form-control mb-3">
+        <label for="*{amount}">Update amount: </label><br>
+        <input type="text" th:field = "*{amount}" class = "form-control-sm mb-3" style="width: 200px;"><br>
 
-        <input type="text" th:field = "*{expenseDate}"
-               placeholder="Expense Date" class="form-control mb-3">
+        <label for ="*{expenseDate}">Update date of expense: </label><br>
+        <input type="date" th:field = "*{expenseDate}" class="form-control-sm mb-3" style="width: 200px;"><br>
 
-        <input type="text" th:field = "*{userId}"
-               placeholder="User Id" class="form-control mb-3">
-
-        <input type="text" th:field = "*{categoryName}"
-               placeholder="Expense Category" class="form-control mb-3">
+        <label for="*{categoryName}">Change the Category:</label><br>
+        <select th:field="*{categoryName}" class="form-control-sm mb-3" style="width: 200px;">
+            <option th:each="category : ${categories}"
+                    th:value="${category}" th:text="${category}">
+            </option>
+        </select><br>
 
         <button type="submit" class="btn btn-primary col-3"> Update Expense
         </button>

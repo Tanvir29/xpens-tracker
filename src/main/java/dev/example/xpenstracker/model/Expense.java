@@ -2,6 +2,8 @@ package dev.example.xpenstracker.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 @Entity
@@ -11,15 +13,13 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull
     private long amount;
 
     @NotNull
+    //@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, fallbackPatterns = { "d/M/yy", "dd.MM.yyyy" })
     private LocalDate expenseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
     private UserInfo userInfo;
 
     @Enumerated(EnumType.STRING)

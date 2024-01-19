@@ -27,15 +27,7 @@ public class UserService {
         return userRepository.findById(userInfoId).get();
     }
 
-    public UserInfo updateUserPhoneNo(Long userInfoId, String phoneNo) {
-        UserInfo userRecord = userRepository.findById(userInfoId).get();
-        userRecord.setPhoneNo(phoneNo);
-        return userRepository.save(userRecord);
-    }
-
-    public UserInfo updateUserEmailId(Long userInfoId, String email) {
-        UserInfo userRecord = userRepository.findById(userInfoId).get();
-        userRecord.setEmail(email);
-        return userRepository.save(userRecord);
+    public UserInfo getUserfromLoginInfo(String email, String password){
+        return userRepository.findByEmailAndPassword(email, password);
     }
 }

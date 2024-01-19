@@ -14,7 +14,7 @@
     <hr>
     <h2> Update User Details </h2>
 
-    <form action="#" th:action="@{/user/saveUser}" th:object = "${userInfo}" method="POST">
+    <form action="#" th:action="@{/user/updateUser}" th:object = "${userInfo}" method="POST">
 
         <input type="hidden" th:field = *{id}/>
 
@@ -30,7 +30,7 @@
         <input type="text" th:field = "*{email}"
                placeholder="Email" class="form-control mb-3">
 
-        <input type="text" th:field = "*{password}"
+        <input type="password" th:field = "*{password}"
                placeholder="Password" class="form-control mb-3">
 
         <button type="submit" class="btn btn-primary col-3"> Confirm

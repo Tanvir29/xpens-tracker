@@ -6,7 +6,12 @@ import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.model.UserInfo;
 import dev.example.xpenstracker.model.CategoryName;
 import dev.example.xpenstracker.repository.ExpenseRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-//@RequiredArgsConstructor
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ExpenseDtoMapper expenseDtoMapper;
@@ -36,86 +40,70 @@ public class ExpenseService {
         expenseRepository.save(expense);
     }
 
-    public List<ExpenseDto> getExpenseList() {
-        for (Expense e : expenseRepository.findAll()){
-            System.out.println(e.toString());
-        };
-
-        return expenseRepository.findAll()
-                .stream()
-                .map(expenseDtoMapper)
-                .collect(Collectors.toList());
+    public Page<Expense> getExpenseList(int totalPage, int pageSize, String sortField, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name())? Sort.by(sortField).ascending():
+                Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(totalPage, pageSize, sort);
+        return expenseRepository.findAll(pageable);
     }
 
-    public List<ExpenseDto> getExpenseListForUsers(Long userInfoId) {
-        return expenseRepository.findByUserInfoId(userInfoId)
-                .stream()
-                .map(expenseDtoMapper)
-                .collect(Collectors.toList());
+    public List<Expense> userExpenseList(Long userInfoId) {
+        return expenseRepository.findByUserInfoId(userInfoId);
     }
 
+    @Transactional
     public void deleteExpenseByExpenseId(Long expenseId) {
         expenseRepository.deleteById(expenseId);
     }
 
     public ExpenseDto getExpenseByExpenseId(Long expenseId) {
-        return expenseRepository.findById(expenseId)
-                .map(expenseDtoMapper)
-                .get();
+        return expenseRepository.findById(expenseId).
+                map(expenseDtoMapper).get();
     }
 
-    public List<ExpenseDto> getExpenseListByUserIdAndCategory(Long userId, CategoryName categoryName) {
-        return expenseRepository.findByUserInfoIdAndCategoryName(userId, categoryName)
-                .stream()
-                .map(expenseDtoMapper)
-                .collect(Collectors.toList());
+    public List<Expense> expenseListForSpecificCategory(Long userId, CategoryName categoryName) {
+        return expenseRepository.findByUserInfoIdAndCategoryName(userId, categoryName);
     }
 
-    public long getTotalExpenseForUser(Long userInfoId) {
+    public long totalExpense(Long userInfoId) {
         return expenseRepository.getTotalExpenseForUser(userInfoId);
     }
 
-    public long getTotalExpenseForUserBetweenTimePeriod(Long userInfoId, LocalDate start, LocalDate end) {
+    public long totalExpenseInTimePeriod(Long userInfoId, LocalDate start, LocalDate end) {
         return expenseRepository.getTotalExpenseForUserBetweenTimePeriod(userInfoId, start, end);
     }
 
-    public List<ExpenseDto> getExpenseListInTimePeriodForUsers(Long userInfoId, LocalDate start, LocalDate end) {
-        return expenseRepository.findByUserInfoIdAndExpenseDateBetween(userInfoId, start, end)
-                .stream()
-                .map(expenseDtoMapper)
-                .collect(Collectors.toList());
-
+    public List<Expense> expenseListInTimePeriod(Long userInfoId, LocalDate start, LocalDate end) {
+        return expenseRepository.findByUserInfoIdAndExpenseDateBetween(userInfoId, start, end);
     }
 
-    public List<ExpenseDto> getExpenseListByCategoryInTimePeriodForUsers
+    public List<Expense> expenseListForSpecificCategoryInTimePeriod
             (Long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate) {
         return expenseRepository.findByUserInfoIdAndCategoryNameAndExpenseDateBetween
-                        (userId, categoryName, startDate, endDate)
-                .stream()
-                .map(expenseDtoMapper)
-                .collect(Collectors.toList());
+                        (userId, categoryName, startDate, endDate);
     }
 
-    public long getTotalExpenseForUserByCategoryInTimePeriod
+    public long totalExpenseForSpecificCategoryInTimePeriod
             (Long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate) {
         return expenseRepository.getTotalExpenseForUserByCategoryInTimePeriod
                 (userId, categoryName, startDate, endDate);
     }
 
-    public long getTotalExpenseForUserByCategory(Long userId, CategoryName categoryName) {
+    public long totalExpenseForSpecificCategory(Long userId, CategoryName categoryName) {
         return expenseRepository.getTotalExpenseForUserByCategory(userId, categoryName);
     }
 
-    public List<Object[]> getExpenseByUserIdAndCategoriesInTimePeriod
+    public List<Object[]> categoryWiseUserExpensesInTimePeriod
             (Long userId, LocalDate startDate, LocalDate endDate) {
         return expenseRepository.getExpenseByUserIdAndCategoriesInTimePeriod
                 (userId, startDate, endDate);
     }
 
-    public List<Object[]> getExpenseByUserIdAndCategories(Long userId) {
+    public List<Object[]> categoryWiseUserExpenses(Long userId) {
         return expenseRepository.getExpenseByUserIdAndCategories(userId);
     }
 
+    @Transactional
     public void updateExpenseByExpenseId(ExpenseDto expenseDto) {
         Expense existingExpense = expenseRepository.findById(expenseDto.getId()).get();
 
