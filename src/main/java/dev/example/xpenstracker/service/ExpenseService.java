@@ -23,7 +23,7 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ExpenseDtoMapper expenseDtoMapper;
     private final UserService userService;
-    @Autowired
+
     public ExpenseService(ExpenseRepository expenseRepository, ExpenseDtoMapper expenseDtoMapper, UserService userService) {
         this.expenseRepository = expenseRepository;
         this.expenseDtoMapper = expenseDtoMapper;

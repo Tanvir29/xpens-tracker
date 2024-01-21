@@ -27,7 +27,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e " +
             "where e.userInfo.id = :userId ")
 
-    public long getTotalExpenseForUser(@Param("userId") long userInfoId);
+    public long getTotalExpenseForUser(@Param("userId") long userId);
 
 
     @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +

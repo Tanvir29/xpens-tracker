@@ -26,10 +26,10 @@
 <div class="container my-2">
     <form action="#" method="get">
         <label for="startDate">Enter Start Date(DD-MM-YYYY):</label>
-        <input type="date" id="startDate" name="startDate">
+        <input type="date" id="startDate" name="startDate" th:value = "${param.startDate}">
 
         <label for="endDate">Enter End Date(DD-MM-YYYY):</label>
-        <input type="date" id="endDate" name="endDate">
+        <input type="date" id="endDate" name="endDate" th:value = "${param.endDate}">
         <button type="submit">Submit</button>
     </form>
 
