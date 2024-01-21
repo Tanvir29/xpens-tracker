@@ -29,7 +29,6 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
     private final UserService userService;
-    @Autowired
     public ExpenseController(ExpenseService expenseService, UserService userService) {
         this.expenseService = expenseService;
         this.userService = userService;
