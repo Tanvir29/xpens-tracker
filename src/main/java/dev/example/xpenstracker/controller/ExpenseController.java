@@ -6,9 +6,11 @@ import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.service.ExpenseService;
 import dev.example.xpenstracker.service.UserService;
 import dev.example.xpenstracker.controller.util.ExpenseResponse;
+import dev.example.xpenstracker.service.util.Pagination;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,11 +30,13 @@ interface ExpenseOperation {
 public class ExpenseController {
 
     private final ExpenseService expenseService;
-    private final UserService userService;
-    public ExpenseController(ExpenseService expenseService, UserService userService) {
+    private final Pagination pagination;
+
+    public ExpenseController(ExpenseService expenseService, Pagination pagination) {
         this.expenseService = expenseService;
-        this.userService = userService;
+        this.pagination = pagination;
     }
+
 
     @ModelAttribute("categories")
     public CategoryName[] categories(){
@@ -71,12 +75,12 @@ public class ExpenseController {
 
     @GetMapping("/expense/")
     public String viewExpenseList(@RequestParam(defaultValue = "0") int pageNo,
-                                  @RequestParam(defaultValue = "12") int pageSize,
+                                  @RequestParam(defaultValue = "10") int pageSize,
                                   @RequestParam(defaultValue = "id") String sortField,
                                   @RequestParam(defaultValue = "ASC") String sortDirection,
                                   Model model){
-
-        Page<Expense> page  = expenseService.getExpenseList(pageNo, pageSize, sortField, sortDirection );
+        Pageable pageable = pagination.getPaginationMode(pageNo,pageSize, sortField, sortDirection);
+        Page<Expense> page  = expenseService.getExpenseList(pageable);
         List<Expense> expenses = page.getContent();
 
         model.addAttribute("currentPage", pageNo);
@@ -118,11 +122,17 @@ public class ExpenseController {
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                   @RequestParam(value = "endDate", required = false)
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                  @RequestParam(defaultValue = "0") int pageNo,
+                                  @RequestParam(defaultValue = "10") int pageSize,
+                                  @RequestParam(defaultValue = "id") String sortField,
+                                  @RequestParam(defaultValue = "ASC") String sortDirection,
                                   Model model) {
 
+        Pageable pageable = pagination.getPaginationMode(pageNo,pageSize, sortField, sortDirection);
         ExpenseOperation operationWithTimePeriod = response -> {
             response.setExpenseList
-                    (expenseService.expenseListInTimePeriod(id, startDate, endDate));
+                    (expenseService.expenseListInTimePeriod(id, startDate, endDate,
+                            pageable));
             response.setTotalExpense
                     (expenseService.totalExpenseInTimePeriod(id, startDate, endDate));
             return response;
@@ -130,7 +140,7 @@ public class ExpenseController {
 
         ExpenseOperation operationWithoutTimePeriod = response -> {
             response.setExpenseList
-                    (expenseService.userExpenseList(id));
+                    (expenseService.userExpenseList(id, pageable));
             response.setTotalExpense(
                     expenseService.totalExpense(id));
             return response;
@@ -139,7 +149,8 @@ public class ExpenseController {
         ExpenseOperation operationWithCategoryAndTimePeriod = response -> {
             response.setExpenseList
                     (expenseService.expenseListForSpecificCategoryInTimePeriod
-                            (id, categoryName, startDate, endDate));
+                            (id, categoryName, startDate, endDate,
+                                    pageable));
             response.setTotalExpense
                     (expenseService.totalExpenseForSpecificCategoryInTimePeriod
                             (id, categoryName, startDate, endDate));
@@ -148,9 +159,10 @@ public class ExpenseController {
 
         ExpenseOperation operationWithCategoryWithoutTimePeriod = response -> {
             response.setExpenseList(
-                    expenseService.expenseListForSpecificCategory(id, categoryName));
+                    expenseService.expenseListForSpecificCategory(id, categoryName,
+                            pageable));
             response.setTotalExpense
-                    (expenseService.totalExpenseForSpecificCategory(id, categoryName));
+                    (expenseService.totalExpenseForSpecificCategory(id,categoryName));
             return response;
         };
 
@@ -166,6 +178,10 @@ public class ExpenseController {
         ExpenseResponse expenseResponse = operations.get(key).apply(new ExpenseResponse());
         model.addAttribute("expenseResponse", expenseResponse);
         model.addAttribute("userInfoId", id);
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages",expenseResponse.getExpenseList().getTotalPages());
+        model.addAttribute("sortBy", sortField);
+        model.addAttribute("sortOrder", sortDirection);
         return "userExpenseList";
     }
 

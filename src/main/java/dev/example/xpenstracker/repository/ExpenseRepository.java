@@ -2,6 +2,8 @@ package dev.example.xpenstracker.repository;
 
 import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.model.CategoryName;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,16 +14,16 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    public List<Expense> findByUserInfoId(long userId);
+    public Page<Expense> findByUserInfoId(long userId, Pageable pageable);
 
-    public List<Expense> findByUserInfoIdAndCategoryName
-            (long userId, CategoryName categoryName);
+    public Page<Expense> findByUserInfoIdAndCategoryName
+            (long userId, CategoryName categoryName, Pageable pageable);
 
-    public List<Expense> findByUserInfoIdAndExpenseDateBetween
-            (long userId, LocalDate start, LocalDate end);
+    public Page<Expense> findByUserInfoIdAndExpenseDateBetween
+            (long userId, LocalDate start, LocalDate end, Pageable pageable);
 
-    public List<Expense> findByUserInfoIdAndCategoryNameAndExpenseDateBetween
-            (long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate);
+    public Page<Expense> findByUserInfoIdAndCategoryNameAndExpenseDateBetween
+            (long userId, CategoryName categoryName, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query("select COALESCE(SUM(e.amount), 0) as totalExpense " +
             "from Expense e " +

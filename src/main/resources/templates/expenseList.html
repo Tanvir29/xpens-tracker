@@ -28,37 +28,37 @@
             <thead>
             <tr>
                 <th>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=id, sortDirection=asc)}"
+                    <a th:href="@{/expense/(sortField=id, sortDirection=asc)}"
                        class="btn-info">&uarr;</a>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=id, sortDirection=desc)}"
+                    <a th:href="@{/expense/(sortField=id, sortDirection=desc)}"
                        class="btn-info">&darr;</a>
                     Expense Id
                 </th>
                 <th>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=amount, sortDirection=asc)}"
+                    <a th:href="@{/expense/(sortField=amount, sortDirection=asc)}"
                        class="btn-info">&uarr;</a>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=amount, sortDirection=desc)}"
+                    <a th:href="@{/expense/(sortField=amount, sortDirection=desc)}"
                        class="btn-info">&darr;</a>
                         Amount
                 </th>
                 <th>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=expenseDate, sortDirection=asc)}"
+                    <a th:href="@{/expense/(sortField=expenseDate, sortDirection=asc)}"
                        class="btn-info">&uarr;</a>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=expenseDate, sortDirection=desc)}"
+                    <a th:href="@{/expense/(sortField=expenseDate, sortDirection=desc)}"
                        class="btn-info">&darr;</a>
                         Expense Date
                 </th>
                 <th>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=userInfo.id, sortDirection=asc)}"
+                    <a th:href="@{/expense/(sortField=userInfo.id, sortDirection=asc)}"
                        class="btn-info">&uarr;</a>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=userInfo.id, sortDirection=desc)}"
+                    <a th:href="@{/expense/(sortField=userInfo.id, sortDirection=desc)}"
                        class="btn-info">&darr;</a>
                         User Id
                 </th>
                 <th>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=expenseCategory, sortDirection=asc)}"
+                    <a th:href="@{/expense/(sortField=categoryName, sortDirection=asc)}"
                        class="btn-info">&uarr;</a>
-                    <a th:href="@{/expense/(pageNo=0, pageSize=${pageSize}, sortField=expenseCategory, sortDirection=desc)}"
+                    <a th:href="@{/expense/(sortField=categoryName, sortDirection=desc)}"
                        class="btn-info">&darr;</a>
                         Expense Category
                 </th>
