@@ -2,26 +2,27 @@ package dev.example.xpenstracker.controller.util;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.model.Expense;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public class ExpenseResponse {
-    private List<Expense> expenseList;
+    private Page<Expense> expenseList;
     private long totalExpense;
 
     public ExpenseResponse() {
     }
 
-    public ExpenseResponse(List<Expense> expenseList, long totalExpense) {
+    public ExpenseResponse(Page<Expense> expenseList, long totalExpense) {
         this.expenseList = expenseList;
         this.totalExpense = totalExpense;
     }
 
-    public List<Expense> getExpenseList() {
+    public Page<Expense> getExpenseList() {
         return expenseList;
     }
 
-    public void setExpenseList(List<Expense> expenseList) {
+    public void setExpenseList(Page<Expense> expenseList) {
         this.expenseList = expenseList;
     }
 
