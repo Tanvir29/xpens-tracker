@@ -3,7 +3,6 @@ package dev.example.xpenstracker.controller;
 import dev.example.xpenstracker.model.UserInfo;
 import dev.example.xpenstracker.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

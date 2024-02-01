@@ -2,7 +2,6 @@ package dev.example.xpenstracker.dto.mapper;
 
 import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.model.Expense;
-import dev.example.xpenstracker.model.UserInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
