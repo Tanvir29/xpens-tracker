@@ -1,14 +1,12 @@
 package dev.example.xpenstracker.controller;
 
+import dev.example.xpenstracker.controller.util.ExpenseResponse;
 import dev.example.xpenstracker.dto.ExpenseDto;
 import dev.example.xpenstracker.model.CategoryName;
 import dev.example.xpenstracker.model.Expense;
 import dev.example.xpenstracker.service.ExpenseService;
-import dev.example.xpenstracker.service.UserService;
-import dev.example.xpenstracker.controller.util.ExpenseResponse;
 import dev.example.xpenstracker.service.util.Pagination;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
