@@ -69,19 +69,19 @@ public class ExpenseService {
     }
 
     public long totalExpenseInTimePeriod(Long userInfoId,
-                                         LocalDate start,
-                                         LocalDate end) {
+                                         LocalDate startDate,
+                                         LocalDate endDate) {
         return expenseRepository.getTotalExpenseForUserBetweenTimePeriod
-                (userInfoId, start, end);
+                (userInfoId, startDate, endDate);
     }
 
     public Page<Expense> expenseListInTimePeriod(Long userInfoId,
-                                                 LocalDate start,
-                                                 LocalDate end,
+                                                 LocalDate startDate,
+                                                 LocalDate endDate,
                                                  Pageable pageable
                                                 ) {
         return expenseRepository.findByUserInfoIdAndExpenseDateBetween
-                (userInfoId, start, end, pageable);
+                (userInfoId, startDate, endDate, pageable);
     }
 
     public Page<Expense> expenseListForSpecificCategoryInTimePeriod
