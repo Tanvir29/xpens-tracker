@@ -14,7 +14,7 @@
     <hr>
     <h2> Save New User </h2>
 
-    <form action="#" th:action="@{saveUser}" th:object = "${userInfo}" method="POST">
+    <form action="#" th:action="@{/user/saveUser}" th:object = "${userInfo}" method="POST">
 
         <input type="text" th:field = "*{firstName}"
                placeholder="First Name" class="form-control mb-3">

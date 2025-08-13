@@ -67,7 +67,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "from Expense e " +
             "where e.userInfo.id = :userId " +
             "and e.expenseDate between :startDate and :endDate " +
-            "GROUP BY Category ORDER BY TotalExpense "
+            "GROUP BY e.categoryName ORDER BY SUM(e.amount) "
     )
     public List<Object[]> getExpenseByUserIdAndCategoriesInTimePeriod
             (@Param("userId") long userId,
@@ -78,7 +78,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         "select e.categoryName as Category, SUM(e.amount) as TotalExpense " +
         "from Expense e " +
         "where e.userInfo.id = :userId " +
-        "GROUP BY Category ORDER BY TotalExpense "
+        "GROUP BY e.categoryName ORDER BY SUM(e.amount) "
     )
     public List<Object[]> getExpenseByUserIdAndCategories(@Param("userId") long userId);
 
