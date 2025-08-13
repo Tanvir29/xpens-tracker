@@ -28,11 +28,7 @@ public class HomePageController {
     public String login(@RequestParam String email,
                         @RequestParam String password,
                         Model model) {
-        if (email.equalsIgnoreCase("admin@gmail.com") &&
-            password.equalsIgnoreCase("admin")){
-            return "redirect:/admin/";
-        }
-        UserInfo user = userService.getUserfromLoginInfo(email,password);
+        UserInfo user = userService.getUserfromLoginInfo(email, password);
         if (user != null) {
             model.addAttribute("message", "Login successful!");
             return "redirect:/user/" + user.getId();
